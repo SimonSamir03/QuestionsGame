@@ -9,7 +9,7 @@ class AdsService {
   AdsService._internal();
 
   // Set to false for production release
-  static const bool _isTestMode = false;
+  static const bool _isTestMode = true;
 
   // ─── Test Ad Unit IDs (Google's official test IDs) ───
   static const String _testBannerId = 'ca-app-pub-3940256099942544/6300978111';
