@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'home_screen.dart';
-import 'language_screen.dart';
+import 'package:get/get.dart';
+import '../controllers/splash_controller.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,6 +16,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
+    // Ensure SplashController is running (it handles navigation after 3s)
+    Get.find<SplashController>();
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
@@ -24,22 +26,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     _bounceAnimation = Tween<double>(begin: 0, end: -20).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-
-    Future.delayed(const Duration(seconds: 3), () => _navigate());
-  }
-
-  Future<void> _navigate() async {
-    if (!mounted) return;
-    final prefs = await SharedPreferences.getInstance();
-    final hasChosenLanguage = prefs.containsKey('language');
-
-    if (!mounted) return;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => hasChosenLanguage ? const HomeScreen() : const LanguageScreen(),
-      ),
     );
   }
 
@@ -70,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   offset: Offset(0, _bounceAnimation.value),
                   child: child,
                 ),
-                child: const Text('🧠', style: TextStyle(fontSize: 80)),
+                child: const Text('\u{1f9e0}', style: TextStyle(fontSize: 80)),
               ),
               const SizedBox(height: 16),
               ShaderMask(
@@ -83,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 ),
               ),
               const SizedBox(height: 8),
-              const Text('ألغاز وذكاء', style: TextStyle(fontSize: 20, color: Color(0xFF8892b0))),
+              const Text('\u0623\u0644\u063a\u0627\u0632 \u0648\u0630\u0643\u0627\u0621', style: TextStyle(fontSize: 20, color: Color(0xFF8892b0))),
               const SizedBox(height: 40),
               const SizedBox(
                 width: 40, height: 40,

@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'services/game_state.dart';
+import 'package:get/get.dart';
+import 'services/storage_service.dart';
 import 'services/ads_service.dart';
-import 'screens/splash_screen.dart';
+import 'routes/app_routes.dart';
+import 'routes/app_pages.dart';
+import 'bindings/app_bindings.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await StorageService.init();
   await AdsService().initialize();
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => GameState(),
-      child: const BrainPlayApp(),
-    ),
-  );
+  runApp(const BrainPlayApp());
 }
 
 class BrainPlayApp extends StatelessWidget {
@@ -20,7 +18,7 @@ class BrainPlayApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'BrainPlay',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -33,7 +31,9 @@ class BrainPlayApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const SplashScreen(),
+      initialBinding: InitialBinding(),
+      initialRoute: AppRoutes.splash,
+      getPages: AppPages.pages,
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../services/game_state.dart';
+import 'package:get/get.dart';
+import '../controllers/game_controller.dart';
 import '../services/sound_service.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -8,64 +8,67 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gameState = Provider.of<GameState>(context);
-    final isAr = gameState.language == 'ar';
+    final game = Get.find<GameController>();
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF1a1a2e),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(isAr ? 'الإعدادات' : 'Settings'),
-        centerTitle: true,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _buildSection(isAr ? 'الصوت' : 'Audio', [
-            _buildSwitch(
-              icon: Icons.volume_up,
-              label: isAr ? 'المؤثرات الصوتية' : 'Sound Effects',
-              value: gameState.soundEnabled,
-              onChanged: (val) {
-                gameState.setSoundEnabled(val);
-                SoundService().setSoundEnabled(val);
-              },
-            ),
-            _buildSwitch(
-              icon: Icons.music_note,
-              label: isAr ? 'الموسيقى' : 'Background Music',
-              value: gameState.musicEnabled,
-              onChanged: (val) {
-                gameState.setMusicEnabled(val);
-                SoundService().setMusicEnabled(val);
-                if (val) {
-                  SoundService().startBackgroundMusic();
-                } else {
-                  SoundService().stopBackgroundMusic();
-                }
-              },
-            ),
-          ]),
-          const SizedBox(height: 20),
-          _buildSection(isAr ? 'اللغة' : 'Language', [
-            _buildLanguageSelector(gameState, isAr),
-          ]),
-          const SizedBox(height: 20),
-          _buildSection(isAr ? 'الحساب' : 'Account', [
-            _buildInfoTile(Icons.star, isAr ? 'الحالة' : 'Status',
-                gameState.isPremium ? (isAr ? 'بريميوم' : 'Premium') : (isAr ? 'مجاني' : 'Free')),
-            _buildInfoTile(Icons.local_fire_department, isAr ? 'أيام متتالية' : 'Streak',
-                '${gameState.streakDays} ${isAr ? 'يوم' : 'days'}'),
-          ]),
-          const SizedBox(height: 20),
-          _buildSection(isAr ? 'حول التطبيق' : 'About', [
-            _buildInfoTile(Icons.info, isAr ? 'الإصدار' : 'Version', '1.0.0'),
-            _buildInfoTile(Icons.code, isAr ? 'المطور' : 'Developer', 'BrainPlay Team'),
-          ]),
-        ],
-      ),
-    );
+    return Obx(() {
+      final isAr = game.isAr;
+
+      return Scaffold(
+        backgroundColor: const Color(0xFF1a1a2e),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: Text(isAr ? '\u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a' : 'Settings'),
+          centerTitle: true,
+        ),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            _buildSection(isAr ? '\u0627\u0644\u0635\u0648\u062a' : 'Audio', [
+              _buildSwitch(
+                icon: Icons.volume_up,
+                label: isAr ? '\u0627\u0644\u0645\u0624\u062b\u0631\u0627\u062a \u0627\u0644\u0635\u0648\u062a\u064a\u0629' : 'Sound Effects',
+                value: game.soundEnabled.value,
+                onChanged: (val) {
+                  game.setSoundEnabled(val);
+                  SoundService().setSoundEnabled(val);
+                },
+              ),
+              _buildSwitch(
+                icon: Icons.music_note,
+                label: isAr ? '\u0627\u0644\u0645\u0648\u0633\u064a\u0642\u0649' : 'Background Music',
+                value: game.musicEnabled.value,
+                onChanged: (val) {
+                  game.setMusicEnabled(val);
+                  SoundService().setMusicEnabled(val);
+                  if (val) {
+                    SoundService().startBackgroundMusic();
+                  } else {
+                    SoundService().stopBackgroundMusic();
+                  }
+                },
+              ),
+            ]),
+            const SizedBox(height: 20),
+            _buildSection(isAr ? '\u0627\u0644\u0644\u063a\u0629' : 'Language', [
+              _buildLanguageSelector(game, isAr),
+            ]),
+            const SizedBox(height: 20),
+            _buildSection(isAr ? '\u0627\u0644\u062d\u0633\u0627\u0628' : 'Account', [
+              _buildInfoTile(Icons.star, isAr ? '\u0627\u0644\u062d\u0627\u0644\u0629' : 'Status',
+                  game.isPremium.value ? (isAr ? '\u0628\u0631\u064a\u0645\u064a\u0648\u0645' : 'Premium') : (isAr ? '\u0645\u062c\u0627\u0646\u064a' : 'Free')),
+              _buildInfoTile(Icons.local_fire_department, isAr ? '\u0623\u064a\u0627\u0645 \u0645\u062a\u062a\u0627\u0644\u064a\u0629' : 'Streak',
+                  '${game.streakDays.value} ${isAr ? '\u064a\u0648\u0645' : 'days'}'),
+            ]),
+            const SizedBox(height: 20),
+            _buildSection(isAr ? '\u062d\u0648\u0644 \u0627\u0644\u062a\u0637\u0628\u064a\u0642' : 'About', [
+              _buildInfoTile(Icons.info, isAr ? '\u0627\u0644\u0625\u0635\u062f\u0627\u0631' : 'Version', '1.0.0'),
+              _buildInfoTile(Icons.code, isAr ? '\u0627\u0644\u0645\u0637\u0648\u0631' : 'Developer', 'BrainPlay Team'),
+            ]),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildSection(String title, List<Widget> children) {
@@ -102,7 +105,7 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLanguageSelector(GameState gameState, bool isAr) {
+  Widget _buildLanguageSelector(GameController game, bool isAr) {
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Row(
@@ -112,9 +115,9 @@ class SettingsScreen extends StatelessWidget {
           Expanded(
             child: Row(
               children: [
-                _langButton('EN', 'en', gameState),
+                _langButton('EN', 'en', game),
                 const SizedBox(width: 12),
-                _langButton('عربي', 'ar', gameState),
+                _langButton('\u0639\u0631\u0628\u064a', 'ar', game),
               ],
             ),
           ),
@@ -123,11 +126,11 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _langButton(String label, String code, GameState gameState) {
-    final isSelected = gameState.language == code;
+  Widget _langButton(String label, String code, GameController game) {
+    final isSelected = game.language.value == code;
     return Expanded(
       child: GestureDetector(
-        onTap: () => gameState.setLanguage(code),
+        onTap: () => game.setLanguage(code),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(

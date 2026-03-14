@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../services/game_state.dart';
+import 'package:get/get.dart';
+import '../controllers/game_controller.dart';
 import '../services/crossword_data.dart';
 import '../services/classic_crossword_data.dart';
 import '../services/sound_service.dart';
@@ -13,122 +13,99 @@ class CrosswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gameState = Provider.of<GameState>(context);
-    final isAr = gameState.language == 'ar';
+    final game = Get.find<GameController>();
 
-    return Directionality(
-      textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
-      child: Scaffold(
-        backgroundColor: const Color(0xFF1a1a2e),
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: Text(isAr ? 'ألعاب الكلمات' : 'Word Games'),
-          centerTitle: true,
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                children: [
-                  // ── Type 1: Classic Crossword ──
-                  _buildSectionHeader(
-                    isAr ? 'الكلمات المتقاطعة' : 'Classic Crossword',
-                    isAr ? 'حل الكلمات من الأدلة أفقي ورأسي' : 'Solve words from across & down clues',
-                    '✏️',
-                  ),
-                  const SizedBox(height: 10),
-                  ...ClassicCrosswordData.puzzles.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final puzzle = entry.value;
-                    final colors = [
-                      const Color(0xFF6C63FF),
-                      const Color(0xFF4ECDC4),
-                      const Color(0xFFFF6B6B),
-                      const Color(0xFFFFBE0B),
-                      const Color(0xFFFF6B9D),
-                      const Color(0xFF45B7D1),
-                    ];
-                    final accentColor = colors[index % colors.length];
+    return Obx(() {
+      final isAr = game.isAr;
 
-                    return _buildPuzzleCard(
-                      context: context,
-                      emoji: puzzle.emoji,
-                      name: isAr ? puzzle.nameAr : puzzle.nameEn,
-                      subtitle: isAr
-                          ? '${puzzle.entries.length} كلمة'
-                          : '${puzzle.entries.length} words',
-                      accentColor: accentColor,
-                      onTap: () {
-                        SoundService().playClick();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => _ClassicPlayScreen(
-                              puzzle: puzzle,
-                              language: gameState.language,
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  }),
+      return Directionality(
+        textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
+        child: Scaffold(
+          backgroundColor: const Color(0xFF1a1a2e),
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            title: Text(isAr ? 'ألعاب الكلمات' : 'Word Games'),
+            centerTitle: true,
+          ),
+          body: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  children: [
+                    // Classic Crossword
+                    _buildSectionHeader(
+                      isAr ? 'الكلمات المتقاطعة' : 'Classic Crossword',
+                      isAr ? 'حل الكلمات من الأدلة أفقي ورأسي' : 'Solve words from across & down clues',
+                      '✏️',
+                    ),
+                    const SizedBox(height: 10),
+                    ...ClassicCrosswordData.puzzles.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final puzzle = entry.value;
+                      final colors = [
+                        const Color(0xFF6C63FF), const Color(0xFF4ECDC4),
+                        const Color(0xFFFF6B6B), const Color(0xFFFFBE0B),
+                        const Color(0xFFFF6B9D), const Color(0xFF45B7D1),
+                      ];
+                      final accentColor = colors[index % colors.length];
 
-                  const SizedBox(height: 24),
+                      return _buildPuzzleCard(
+                        context: context,
+                        emoji: puzzle.emoji,
+                        name: isAr ? puzzle.nameAr : puzzle.nameEn,
+                        subtitle: isAr ? '${puzzle.entries.length} كلمة' : '${puzzle.entries.length} words',
+                        accentColor: accentColor,
+                        onTap: () {
+                          SoundService().playClick();
+                          Get.to(() => _ClassicPlayScreen(puzzle: puzzle, language: game.language.value));
+                        },
+                      );
+                    }),
 
-                  // ── Type 2: Word Search ──
-                  _buildSectionHeader(
-                    isAr ? 'البحث عن الكلمات' : 'Word Search',
-                    isAr ? 'ابحث عن الكلمات المخفية في الشبكة' : 'Find hidden words in the grid',
-                    '🔍',
-                  ),
-                  const SizedBox(height: 10),
-                  ...CrosswordData.categories.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final cat = entry.value;
-                    final colors = [
-                      const Color(0xFFFF6B9D),
-                      const Color(0xFF45B7D1),
-                      const Color(0xFF6C63FF),
-                      const Color(0xFF4ECDC4),
-                      const Color(0xFFFF6B6B),
-                      const Color(0xFFFFBE0B),
-                    ];
-                    final accentColor = colors[index % colors.length];
+                    const SizedBox(height: 24),
 
-                    return _buildPuzzleCard(
-                      context: context,
-                      emoji: cat.emoji,
-                      name: isAr ? cat.nameAr : cat.nameEn,
-                      subtitle: isAr
-                          ? '${cat.wordsAr.length} كلمة'
-                          : '${cat.wordsEn.length} words',
-                      accentColor: accentColor,
-                      onTap: () {
-                        SoundService().playClick();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => _WordSearchPlayScreen(
-                              category: cat,
-                              language: gameState.language,
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  }),
+                    // Word Search
+                    _buildSectionHeader(
+                      isAr ? 'البحث عن الكلمات' : 'Word Search',
+                      isAr ? 'ابحث عن الكلمات المخفية في الشبكة' : 'Find hidden words in the grid',
+                      '🔍',
+                    ),
+                    const SizedBox(height: 10),
+                    ...CrosswordData.categories.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final cat = entry.value;
+                      final colors = [
+                        const Color(0xFFFF6B9D), const Color(0xFF45B7D1),
+                        const Color(0xFF6C63FF), const Color(0xFF4ECDC4),
+                        const Color(0xFFFF6B6B), const Color(0xFFFFBE0B),
+                      ];
+                      final accentColor = colors[index % colors.length];
 
-                  const SizedBox(height: 16),
-                ],
+                      return _buildPuzzleCard(
+                        context: context,
+                        emoji: cat.emoji,
+                        name: isAr ? cat.nameAr : cat.nameEn,
+                        subtitle: isAr ? '${cat.wordsAr.length} كلمة' : '${cat.wordsEn.length} words',
+                        accentColor: accentColor,
+                        onTap: () {
+                          SoundService().playClick();
+                          Get.to(() => _WordSearchPlayScreen(category: cat, language: game.language.value));
+                        },
+                      );
+                    }),
+
+                    const SizedBox(height: 16),
+                  ],
+                ),
               ),
-            ),
-            if (!gameState.isPremium) const BannerAdWidget(),
-          ],
+              if (!game.isPremium.value) const BannerAdWidget(),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildSectionHeader(String title, String subtitle, String emoji) {
@@ -173,8 +150,7 @@ class CrosswordScreen extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 46,
-              height: 46,
+              width: 46, height: 46,
               decoration: BoxDecoration(
                 color: accentColor.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
@@ -200,7 +176,6 @@ class CrosswordScreen extends StatelessWidget {
   }
 }
 
-// ── Classic Crossword Play Screen ──
 class _ClassicPlayScreen extends StatelessWidget {
   final ClassicCrosswordPuzzle puzzle;
   final String language;
@@ -209,8 +184,8 @@ class _ClassicPlayScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final game = Get.find<GameController>();
     final isAr = language == 'ar';
-    final gameState = Provider.of<GameState>(context);
 
     return Directionality(
       textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
@@ -227,7 +202,7 @@ class _ClassicPlayScreen extends StatelessWidget {
             Expanded(
               child: ClassicCrosswordGame(puzzle: puzzle, language: language),
             ),
-            if (!gameState.isPremium) const BannerAdWidget(),
+            Obx(() => !game.isPremium.value ? const BannerAdWidget() : const SizedBox.shrink()),
           ],
         ),
       ),
@@ -235,7 +210,6 @@ class _ClassicPlayScreen extends StatelessWidget {
   }
 }
 
-// ── Word Search Play Screen ──
 class _WordSearchPlayScreen extends StatelessWidget {
   final CrosswordCategory category;
   final String language;
@@ -244,8 +218,8 @@ class _WordSearchPlayScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final game = Get.find<GameController>();
     final isAr = language == 'ar';
-    final gameState = Provider.of<GameState>(context);
 
     return Directionality(
       textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
@@ -262,7 +236,7 @@ class _WordSearchPlayScreen extends StatelessWidget {
             Expanded(
               child: CrosswordGame(category: category, language: language),
             ),
-            if (!gameState.isPremium) const BannerAdWidget(),
+            Obx(() => !game.isPremium.value ? const BannerAdWidget() : const SizedBox.shrink()),
           ],
         ),
       ),

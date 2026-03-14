@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../services/game_state.dart';
+import 'package:get/get.dart';
+import '../controllers/game_controller.dart';
 import '../services/sound_service.dart';
+import '../routes/app_routes.dart';
 import 'level_screen.dart';
-import 'word_categories_screen.dart';
-import 'daily_reward_screen.dart';
-import 'leaderboard_screen.dart';
-import 'shop_screen.dart';
-import 'settings_screen.dart';
-import 'crossword_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   late AnimationController _pulseController;
   late Animation<double> _pulseAnim;
+  final game = Get.find<GameController>();
 
   @override
   void initState() {
@@ -41,92 +37,93 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final gameState = Provider.of<GameState>(context);
-    final isAr = gameState.language == 'ar';
+    return Obx(() {
+      final isAr = game.isAr;
 
-    return Directionality(
-      textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
-      child: Scaffold(
-        backgroundColor: const Color(0xFF1a1a2e),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // Top Bar
-                _buildTopBar(gameState, isAr, context),
-                const SizedBox(height: 16),
-                // Logo
-                _buildLogo(),
-                const SizedBox(height: 8),
-                Text(
-                  isAr ? 'ألغاز بلا حدود' : 'Endless Puzzles',
-                  style: const TextStyle(color: Colors.white54, fontSize: 14),
-                ),
-                const SizedBox(height: 20),
-                // Daily Reward Banner
-                _buildDailyRewardBanner(context, isAr),
-                const SizedBox(height: 16),
-                // Quick Actions
-                _buildQuickActions(context, isAr),
-                const SizedBox(height: 20),
-                // Games Grid
-                Text(
-                  isAr ? 'اختر لعبة' : 'Choose a Game',
-                  style: const TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 12),
-                _buildGameCard(
-                  context, '🔤',
-                  isAr ? 'ترتيب الحروف' : 'Word Builder',
-                  isAr ? 'رتب الحروف لتكوين كلمات' : 'Arrange letters to form words',
-                  const Color(0xFF6C63FF),
-                  () => _navigateToGame(context, 'word', isAr),
-                ),
-                _buildGameCard(
-                  context, '❓',
-                  isAr ? 'أسئلة سريعة' : 'Quick Quiz',
-                  isAr ? 'أجب على أسئلة المعرفة' : 'Answer knowledge questions',
-                  const Color(0xFF4ECDC4),
-                  () => _navigateToGame(context, 'quiz', isAr),
-                ),
-                _buildGameCard(
-                  context, '🔢',
-                  isAr ? 'عد الأشكال' : 'Count Puzzle',
-                  isAr ? 'عد الأشكال الصحيحة' : 'Count the correct shapes',
-                  const Color(0xFFFF6B6B),
-                  () => _navigateToGame(context, 'count', isAr),
-                ),
-                _buildGameCard(
-                  context, '🅰️',
-                  isAr ? 'تحدي الحروف' : 'Word Categories',
-                  isAr ? 'اكتب كلمات تبدأ بحرف عشوائي' : 'Write words starting with a random letter',
-                  const Color(0xFFFFBE0B),
-                  () {
-                    SoundService().playClick();
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const WordCategoriesScreen()));
-                  },
-                ),
-                _buildGameCard(
-                  context, '🔍',
-                  isAr ? 'الكلمات المتقاطعة' : 'Word Search',
-                  isAr ? 'ابحث عن الكلمات المخفية في الشبكة' : 'Find hidden words in the grid',
-                  const Color(0xFFFF6B9D),
-                  () {
-                    SoundService().playClick();
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const CrosswordScreen()));
-                  },
-                ),
-                const SizedBox(height: 20),
-              ],
+      return Directionality(
+        textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
+        child: Scaffold(
+          backgroundColor: const Color(0xFF1a1a2e),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  // Top Bar
+                  _buildTopBar(isAr),
+                  const SizedBox(height: 16),
+                  // Logo
+                  _buildLogo(),
+                  const SizedBox(height: 8),
+                  Text(
+                    isAr ? '\u0623\u0644\u063a\u0627\u0632 \u0628\u0644\u0627 \u062d\u062f\u0648\u062f' : 'Endless Puzzles',
+                    style: const TextStyle(color: Colors.white54, fontSize: 14),
+                  ),
+                  const SizedBox(height: 20),
+                  // Daily Reward Banner
+                  _buildDailyRewardBanner(isAr),
+                  const SizedBox(height: 16),
+                  // Quick Actions
+                  _buildQuickActions(isAr),
+                  const SizedBox(height: 20),
+                  // Games Grid
+                  Text(
+                    isAr ? '\u0627\u062e\u062a\u0631 \u0644\u0639\u0628\u0629' : 'Choose a Game',
+                    style: const TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildGameCard(
+                    '\u{1f524}',
+                    isAr ? '\u062a\u0631\u062a\u064a\u0628 \u0627\u0644\u062d\u0631\u0648\u0641' : 'Word Builder',
+                    isAr ? '\u0631\u062a\u0628 \u0627\u0644\u062d\u0631\u0648\u0641 \u0644\u062a\u0643\u0648\u064a\u0646 \u0643\u0644\u0645\u0627\u062a' : 'Arrange letters to form words',
+                    const Color(0xFF6C63FF),
+                    () => _navigateToGame('word'),
+                  ),
+                  _buildGameCard(
+                    '\u2753',
+                    isAr ? '\u0623\u0633\u0626\u0644\u0629 \u0633\u0631\u064a\u0639\u0629' : 'Quick Quiz',
+                    isAr ? '\u0623\u062c\u0628 \u0639\u0644\u0649 \u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0645\u0639\u0631\u0641\u0629' : 'Answer knowledge questions',
+                    const Color(0xFF4ECDC4),
+                    () => _navigateToGame('quiz'),
+                  ),
+                  _buildGameCard(
+                    '\u{1f522}',
+                    isAr ? '\u0639\u062f \u0627\u0644\u0623\u0634\u0643\u0627\u0644' : 'Count Puzzle',
+                    isAr ? '\u0639\u062f \u0627\u0644\u0623\u0634\u0643\u0627\u0644 \u0627\u0644\u0635\u062d\u064a\u062d\u0629' : 'Count the correct shapes',
+                    const Color(0xFFFF6B6B),
+                    () => _navigateToGame('count'),
+                  ),
+                  _buildGameCard(
+                    '\u{1f170}\u{fe0f}',
+                    isAr ? '\u062a\u062d\u062f\u064a \u0627\u0644\u062d\u0631\u0648\u0641' : 'Word Categories',
+                    isAr ? '\u0627\u0643\u062a\u0628 \u0643\u0644\u0645\u0627\u062a \u062a\u0628\u062f\u0623 \u0628\u062d\u0631\u0641 \u0639\u0634\u0648\u0627\u0626\u064a' : 'Write words starting with a random letter',
+                    const Color(0xFFFFBE0B),
+                    () {
+                      SoundService().playClick();
+                      Get.toNamed(AppRoutes.wordCategories);
+                    },
+                  ),
+                  _buildGameCard(
+                    '\u{1f50d}',
+                    isAr ? '\u0627\u0644\u0643\u0644\u0645\u0627\u062a \u0627\u0644\u0645\u062a\u0642\u0627\u0637\u0639\u0629' : 'Word Search',
+                    isAr ? '\u0627\u0628\u062d\u062b \u0639\u0646 \u0627\u0644\u0643\u0644\u0645\u0627\u062a \u0627\u0644\u0645\u062e\u0641\u064a\u0629 \u0641\u064a \u0627\u0644\u0634\u0628\u0643\u0629' : 'Find hidden words in the grid',
+                    const Color(0xFFFF6B9D),
+                    () {
+                      SoundService().playClick();
+                      Get.toNamed(AppRoutes.crossword);
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
-  Widget _buildTopBar(GameState gameState, bool isAr, BuildContext context) {
+  Widget _buildTopBar(bool isAr) {
     return Row(
       children: [
         // Coins
@@ -138,9 +135,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
           child: Row(
             children: [
-              const Text('🪙', style: TextStyle(fontSize: 16)),
+              const Text('\u{1fa99}', style: TextStyle(fontSize: 16)),
               const SizedBox(width: 6),
-              Text('${gameState.coins}', style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 16)),
+              Text('${game.coins.value}', style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 16)),
             ],
           ),
         ),
@@ -154,15 +151,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
           child: Row(
             children: [
-              const Text('❤️', style: TextStyle(fontSize: 16)),
+              const Text('\u2764\ufe0f', style: TextStyle(fontSize: 16)),
               const SizedBox(width: 6),
-              Text('${gameState.lives}', style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 16)),
+              Text('${game.lives.value}', style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 16)),
             ],
           ),
         ),
         const SizedBox(width: 8),
         // Streak
-        if (gameState.streakDays > 0)
+        if (game.streakDays.value > 0)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
@@ -171,9 +168,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
             child: Row(
               children: [
-                const Text('🔥', style: TextStyle(fontSize: 16)),
+                const Text('\u{1f525}', style: TextStyle(fontSize: 16)),
                 const SizedBox(width: 4),
-                Text('${gameState.streakDays}', style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+                Text('${game.streakDays.value}', style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
               ],
             ),
           ),
@@ -182,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         IconButton(
           icon: const Icon(Icons.settings, color: Colors.white54),
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
+            Get.toNamed(AppRoutes.settings);
           },
         ),
       ],
@@ -204,11 +201,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildDailyRewardBanner(BuildContext context, bool isAr) {
+  Widget _buildDailyRewardBanner(bool isAr) {
     return GestureDetector(
       onTap: () {
         SoundService().playClick();
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const DailyRewardScreen()));
+        Get.toNamed(AppRoutes.dailyReward);
       },
       child: Container(
         width: double.infinity,
@@ -219,18 +216,18 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         ),
         child: Row(
           children: [
-            const Text('🎁', style: TextStyle(fontSize: 32)),
+            const Text('\u{1f381}', style: TextStyle(fontSize: 32)),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isAr ? 'المكافأة اليومية' : 'Daily Reward',
+                    isAr ? '\u0627\u0644\u0645\u0643\u0627\u0641\u0623\u0629 \u0627\u0644\u064a\u0648\u0645\u064a\u0629' : 'Daily Reward',
                     style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    isAr ? 'اجمع مكافأتك اليومية!' : 'Claim your daily reward!',
+                    isAr ? '\u0627\u062c\u0645\u0639 \u0645\u0643\u0627\u0641\u0623\u062a\u0643 \u0627\u0644\u064a\u0648\u0645\u064a\u0629!' : 'Claim your daily reward!',
                     style: const TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
@@ -243,34 +240,33 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildQuickActions(BuildContext context, bool isAr) {
+  Widget _buildQuickActions(bool isAr) {
     return Row(
       children: [
         _buildQuickAction(
-          context, Icons.leaderboard, isAr ? 'الترتيب' : 'Ranks',
+          Icons.leaderboard, isAr ? '\u0627\u0644\u062a\u0631\u062a\u064a\u0628' : 'Ranks',
           const Color(0xFFFF6B6B),
-          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LeaderboardScreen())),
+          () => Get.toNamed(AppRoutes.leaderboard),
         ),
         const SizedBox(width: 8),
         _buildQuickAction(
-          context, Icons.shopping_bag, isAr ? 'المتجر' : 'Shop',
+          Icons.shopping_bag, isAr ? '\u0627\u0644\u0645\u062a\u062c\u0631' : 'Shop',
           const Color(0xFFFFBE0B),
-          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ShopScreen())),
+          () => Get.toNamed(AppRoutes.shop),
         ),
         const SizedBox(width: 8),
         _buildQuickAction(
-          context, Icons.emoji_events, isAr ? 'يومي' : 'Daily',
+          Icons.emoji_events, isAr ? '\u064a\u0648\u0645\u064a' : 'Daily',
           const Color(0xFF4ECDC4),
-          () async {
-            // Navigate to daily challenge level directly
-            _navigateToGame(context, 'quiz', isAr);
+          () {
+            _navigateToGame('quiz');
           },
         ),
       ],
     );
   }
 
-  Widget _buildQuickAction(BuildContext context, IconData icon, String label, Color color, VoidCallback onTap) {
+  Widget _buildQuickAction(IconData icon, String label, Color color, VoidCallback onTap) {
     return Expanded(
       child: GestureDetector(
         onTap: () {
@@ -295,7 +291,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildGameCard(BuildContext context, String emoji, String title, String subtitle, Color accentColor, VoidCallback onTap) {
+  Widget _buildGameCard(String emoji, String title, String subtitle, Color accentColor, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -335,10 +331,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
-  void _navigateToGame(BuildContext context, String type, bool isAr) {
+  void _navigateToGame(String type) {
     SoundService().playClick();
-    Navigator.push(context, MaterialPageRoute(
-      builder: (_) => LevelScreen(gameType: type),
-    ));
+    Get.to(() => LevelScreen(gameType: type));
   }
 }

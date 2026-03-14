@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:confetti/confetti.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 import '../models/puzzle_model.dart';
-import '../services/game_state.dart';
+import '../controllers/game_controller.dart';
+import '../routes/app_routes.dart';
 import '../services/sound_service.dart';
 import '../services/ads_service.dart';
 import 'game_screen.dart';
@@ -34,6 +35,8 @@ class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderSt
   late Animation<double> _scaleAnim;
   bool _doubledCoins = false;
 
+  final game = Get.find<GameController>();
+
   @override
   void initState() {
     super.initState();
@@ -62,209 +65,201 @@ class _ResultScreenState extends State<ResultScreen> with SingleTickerProviderSt
     super.dispose();
   }
 
-  Future<void> _doubleCoins(GameState gameState) async {
+  Future<void> _doubleCoins() async {
     final watched = await AdsService().showRewarded();
     if (watched && mounted) {
-      gameState.addCoins(10); // Double the 10 coins
+      game.addCoins(10); // Double the 10 coins
       setState(() => _doubledCoins = true);
       SoundService().playReward();
     }
   }
 
-  Future<void> _continueAfterLoss(GameState gameState) async {
+  Future<void> _continueAfterLoss() async {
     final watched = await AdsService().showRewarded();
     if (watched && mounted) {
-      gameState.addLife();
-      Navigator.pop(context);
+      game.addLife();
+      Get.back();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final gameState = Provider.of<GameState>(context);
-    final isAr = gameState.language == 'ar';
+    return Obx(() {
+      final isAr = game.isAr;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF1a1a2e),
-      body: Stack(
-        children: [
-          // Confetti
-          Align(
-            alignment: Alignment.topCenter,
-            child: ConfettiWidget(
-              confettiController: _confettiController,
-              blastDirectionality: BlastDirectionality.explosive,
-              shouldLoop: false,
-              colors: const [
-                Color(0xFF6C63FF), Color(0xFF4ECDC4),
-                Colors.amber, Colors.pink, Colors.orange,
-              ],
+      return Scaffold(
+        backgroundColor: const Color(0xFF1a1a2e),
+        body: Stack(
+          children: [
+            // Confetti
+            Align(
+              alignment: Alignment.topCenter,
+              child: ConfettiWidget(
+                confettiController: _confettiController,
+                blastDirectionality: BlastDirectionality.explosive,
+                shouldLoop: false,
+                colors: const [
+                  Color(0xFF6C63FF), Color(0xFF4ECDC4),
+                  Colors.amber, Colors.pink, Colors.orange,
+                ],
+              ),
             ),
-          ),
-          // Content
-          SafeArea(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: ScaleTransition(
-                  scale: _scaleAnim,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Result emoji
-                      Text(
-                        widget.isCorrect ? '🎉' : '😢',
-                        style: const TextStyle(fontSize: 80),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        widget.isCorrect
-                            ? (isAr ? 'أحسنت!' : 'Excellent!')
-                            : (isAr ? 'حاول مرة أخرى' : 'Try Again'),
-                        style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Score
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF2a2a4a),
-                          borderRadius: BorderRadius.circular(20),
+            // Content
+            SafeArea(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: ScaleTransition(
+                    scale: _scaleAnim,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Result emoji
+                        Text(
+                          widget.isCorrect ? '🎉' : '😢',
+                          style: const TextStyle(fontSize: 80),
                         ),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text('🪙', style: TextStyle(fontSize: 24)),
-                                const SizedBox(width: 8),
-                                Text(
-                                  widget.isCorrect
-                                      ? '+${_doubledCoins ? 20 : 10}'
-                                      : '+0',
-                                  style: TextStyle(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
-                                    color: widget.isCorrect ? Colors.amber : Colors.white54,
+                        const SizedBox(height: 16),
+                        Text(
+                          widget.isCorrect
+                              ? (isAr ? 'أحسنت!' : 'Excellent!')
+                              : (isAr ? 'حاول مرة أخرى' : 'Try Again'),
+                          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Score
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2a2a4a),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text('🪙', style: TextStyle(fontSize: 24)),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    widget.isCorrect
+                                        ? '+${_doubledCoins ? 20 : 10}'
+                                        : '+0',
+                                    style: TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                      color: widget.isCorrect ? Colors.amber : Colors.white54,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text('❤️', style: TextStyle(fontSize: 18)),
-                                const SizedBox(width: 6),
-                                Text(
-                                  '${gameState.lives} ${isAr ? 'حياة' : 'lives'}',
-                                  style: const TextStyle(color: Colors.white54, fontSize: 16),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text('❤️', style: TextStyle(fontSize: 18)),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    '${game.lives.value} ${isAr ? 'حياة' : 'lives'}',
+                                    style: const TextStyle(color: Colors.white54, fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
-                      // Double coins offer
-                      if (widget.isCorrect && !_doubledCoins && !gameState.isPremium)
-                        _buildAdButton(
-                          icon: Icons.play_circle,
-                          label: isAr ? 'ضاعف عملاتك!' : 'Double your coins!',
-                          color: Colors.amber,
-                          onTap: () => _doubleCoins(gameState),
-                        ),
+                        // Double coins offer
+                        if (widget.isCorrect && !_doubledCoins && !game.isPremium.value)
+                          _buildAdButton(
+                            icon: Icons.play_circle,
+                            label: isAr ? 'ضاعف عملاتك!' : 'Double your coins!',
+                            color: Colors.amber,
+                            onTap: _doubleCoins,
+                          ),
 
-                      // Continue after loss
-                      if (!widget.isCorrect && gameState.lives <= 0)
-                        _buildAdButton(
-                          icon: Icons.play_circle,
-                          label: isAr ? 'شاهد إعلان للاستمرار' : 'Watch ad to continue',
-                          color: const Color(0xFF4ECDC4),
-                          onTap: () => _continueAfterLoss(gameState),
-                        ),
+                        // Continue after loss
+                        if (!widget.isCorrect && game.lives.value <= 0)
+                          _buildAdButton(
+                            icon: Icons.play_circle,
+                            label: isAr ? 'شاهد إعلان للاستمرار' : 'Watch ad to continue',
+                            color: const Color(0xFF4ECDC4),
+                            onTap: _continueAfterLoss,
+                          ),
 
-                      const SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
-                      // Action Buttons
-                      if (widget.isCorrect)
-                        _buildActionButton(
-                          label: (widget.puzzles != null && widget.currentIndex != null && widget.currentIndex! + 1 < widget.puzzles!.length)
-                              ? (isAr ? 'المستوى التالي' : 'Next Level')
-                              : (isAr ? 'الرئيسية' : 'Back to Home'),
-                          color: const Color(0xFF6C63FF),
-                          onTap: () {
-                            SoundService().playClick();
-                            if (widget.puzzles != null && widget.currentIndex != null) {
-                              final nextIndex = widget.currentIndex! + 1;
-                              if (nextIndex < widget.puzzles!.length) {
-                                // Check for mystery box
-                                if (gameState.shouldShowMysteryBox) {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(builder: (_) => const MysteryBoxScreen()),
-                                  );
-                                  return;
-                                }
+                        // Action Buttons
+                        if (widget.isCorrect)
+                          _buildActionButton(
+                            label: (widget.puzzles != null && widget.currentIndex != null && widget.currentIndex! + 1 < widget.puzzles!.length)
+                                ? (isAr ? 'المستوى التالي' : 'Next Level')
+                                : (isAr ? 'الرئيسية' : 'Back to Home'),
+                            color: const Color(0xFF6C63FF),
+                            onTap: () {
+                              SoundService().playClick();
+                              if (widget.puzzles != null && widget.currentIndex != null) {
+                                final nextIndex = widget.currentIndex! + 1;
+                                if (nextIndex < widget.puzzles!.length) {
+                                  // Check for mystery box
+                                  if (game.shouldShowMysteryBox) {
+                                    Get.off(() => const MysteryBoxScreen());
+                                    return;
+                                  }
 
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => GameScreen(
+                                  Get.off(
+                                    () => GameScreen(
                                       puzzle: widget.puzzles![nextIndex],
                                       levelNumber: nextIndex + 1,
                                       puzzles: widget.puzzles,
                                       currentIndex: nextIndex,
                                     ),
-                                  ),
-                                );
-                                return;
+                                  );
+                                  return;
+                                }
                               }
-                            }
-                            Navigator.popUntil(context, (route) => route.isFirst);
-                          },
-                        ),
+                              Get.offAllNamed(AppRoutes.home);
+                            },
+                          ),
 
-                      if (!widget.isCorrect && gameState.lives > 0)
-                        _buildActionButton(
-                          label: isAr ? 'حاول مرة أخرى' : 'Try Again',
-                          color: const Color(0xFFFF6B6B),
-                          onTap: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => GameScreen(
+                        if (!widget.isCorrect && game.lives.value > 0)
+                          _buildActionButton(
+                            label: isAr ? 'حاول مرة أخرى' : 'Try Again',
+                            color: const Color(0xFFFF6B6B),
+                            onTap: () {
+                              Get.off(
+                                () => GameScreen(
                                   puzzle: widget.puzzle,
                                   levelNumber: widget.levelNumber,
                                   puzzles: widget.puzzles,
                                   currentIndex: widget.currentIndex,
                                 ),
-                              ),
-                            );
-                          },
-                        ),
+                              );
+                            },
+                          ),
 
-                      const SizedBox(height: 10),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.popUntil(context, (route) => route.isFirst);
-                        },
-                        child: Text(
-                          isAr ? 'الرئيسية' : 'Home',
-                          style: const TextStyle(color: Colors.white54, fontSize: 16),
+                        const SizedBox(height: 10),
+                        TextButton(
+                          onPressed: () {
+                            Get.offAllNamed(AppRoutes.home);
+                          },
+                          child: Text(
+                            isAr ? 'الرئيسية' : 'Home',
+                            style: const TextStyle(color: Colors.white54, fontSize: 16),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildAdButton({

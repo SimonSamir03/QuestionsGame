@@ -1,63 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../services/ads_service.dart';
 
-class BannerAdWidget extends StatefulWidget {
-  const BannerAdWidget({super.key});
+class BannerAdController extends GetxController {
+  BannerAd? bannerAd;
+  final isAdLoaded = false.obs;
 
   @override
-  State<BannerAdWidget> createState() => _BannerAdWidgetState();
-}
-
-class _BannerAdWidgetState extends State<BannerAdWidget> {
-  BannerAd? _bannerAd;
-  bool _isAdLoaded = false;
-
-  @override
-  void initState() {
-    super.initState();
-    if (AdsService().shouldShowAds) {
-      _loadAd();
-    }
+  void onInit() {
+    super.onInit();
+    if (AdsService().shouldShowAds) _loadAd();
   }
 
   void _loadAd() {
-    _bannerAd = AdsService().createBannerAd(
-      onAdLoaded: (ad) {
-        if (mounted) {
-          setState(() => _isAdLoaded = true);
-        }
-      },
+    bannerAd = AdsService().createBannerAd(
+      onAdLoaded: (ad) => isAdLoaded.value = true,
       onAdFailedToLoad: (ad, error) {
-        if (mounted) {
-          setState(() => _isAdLoaded = false);
-        }
-        // Retry after delay
+        isAdLoaded.value = false;
         Future.delayed(const Duration(seconds: 30), () {
-          if (mounted) _loadAd();
+          if (!isClosed) _loadAd();
         });
       },
     );
-    _bannerAd!.load();
+    bannerAd!.load();
   }
 
   @override
-  void dispose() {
-    _bannerAd?.dispose();
-    super.dispose();
+  void onClose() {
+    bannerAd?.dispose();
+    super.onClose();
   }
+}
+
+class BannerAdWidget extends StatelessWidget {
+  const BannerAdWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (!AdsService().shouldShowAds || !_isAdLoaded || _bannerAd == null) {
-      return const SizedBox.shrink();
-    }
+    final ctrl = Get.put(BannerAdController(), tag: 'banner_${identityHashCode(this)}');
 
-    return Container(
-      width: _bannerAd!.size.width.toDouble(),
-      height: _bannerAd!.size.height.toDouble(),
-      alignment: Alignment.center,
-      child: AdWidget(ad: _bannerAd!),
-    );
+    return Obx(() {
+      if (!AdsService().shouldShowAds || !ctrl.isAdLoaded.value || ctrl.bannerAd == null) {
+        return const SizedBox.shrink();
+      }
+      return Container(
+        width: ctrl.bannerAd!.size.width.toDouble(),
+        height: ctrl.bannerAd!.size.height.toDouble(),
+        alignment: Alignment.center,
+        child: AdWidget(ad: ctrl.bannerAd!),
+      );
+    });
   }
 }

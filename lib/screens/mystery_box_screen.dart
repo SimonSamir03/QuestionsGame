@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../services/game_state.dart';
-import '../services/ads_service.dart';
+import 'package:get/get.dart';
+import '../controllers/mystery_box_controller.dart';
+import '../controllers/game_controller.dart';
 
 class MysteryBoxScreen extends StatefulWidget {
   const MysteryBoxScreen({super.key});
@@ -11,10 +11,11 @@ class MysteryBoxScreen extends StatefulWidget {
 }
 
 class _MysteryBoxScreenState extends State<MysteryBoxScreen> with SingleTickerProviderStateMixin {
-  bool _isOpened = false;
-  Map<String, dynamic>? _reward;
   late AnimationController _shakeController;
   late Animation<double> _shakeAnim;
+
+  final game = Get.find<GameController>();
+  final ctrl = Get.put(MysteryBoxController());
 
   @override
   void initState() {
@@ -29,31 +30,13 @@ class _MysteryBoxScreenState extends State<MysteryBoxScreen> with SingleTickerPr
   }
 
   void _openBox() {
-    final ads = AdsService();
-    final reward = ads.generateMysteryReward();
-    final gameState = Provider.of<GameState>(context, listen: false);
-
-    setState(() {
-      _isOpened = true;
-      _reward = reward;
-    });
+    ctrl.openBox();
     _shakeController.stop();
-
-    if (reward['type'] == 'coins') {
-      gameState.addCoins(reward['amount'] as int);
-    } else if (reward['type'] == 'life') {
-      gameState.addLife(reward['amount'] as int);
-    }
-    gameState.resetMysteryBoxCounter();
   }
 
   Future<void> _openAnotherBox() async {
-    final watched = await AdsService().showRewarded();
-    if (watched && mounted) {
-      setState(() {
-        _isOpened = false;
-        _reward = null;
-      });
+    await ctrl.openAnotherBox();
+    if (!ctrl.isOpened.value) {
       _shakeController.repeat(reverse: true);
     }
   }
@@ -66,120 +49,123 @@ class _MysteryBoxScreenState extends State<MysteryBoxScreen> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
-    final gameState = Provider.of<GameState>(context);
-    final isAr = gameState.language == 'ar';
+    return Obx(() {
+      final isAr = game.isAr;
+      final isOpened = ctrl.isOpened.value;
+      final reward = ctrl.reward.value;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF1a1a2e),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(isAr ? 'صندوق الغموض' : 'Mystery Box'),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (!_isOpened) ...[
-                AnimatedBuilder(
-                  animation: _shakeAnim,
-                  builder: (context, child) {
-                    return Transform.rotate(
-                      angle: _shakeAnim.value,
-                      child: child,
-                    );
-                  },
-                  child: const Text('🎁', style: TextStyle(fontSize: 120)),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  isAr ? 'لديك صندوق غموض!' : 'You got a Mystery Box!',
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  isAr ? 'اضغط لفتحه' : 'Tap to open it',
-                  style: const TextStyle(color: Colors.white54, fontSize: 16),
-                ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    onPressed: _openBox,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber,
-                      foregroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    ),
-                    child: Text(
-                      isAr ? 'افتح الصندوق!' : 'Open Box!',
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
+      return Scaffold(
+        backgroundColor: const Color(0xFF1a1a2e),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: Text(isAr ? 'صندوق الغموض' : 'Mystery Box'),
+          centerTitle: true,
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (!isOpened) ...[
+                  AnimatedBuilder(
+                    animation: _shakeAnim,
+                    builder: (context, child) {
+                      return Transform.rotate(
+                        angle: _shakeAnim.value,
+                        child: child,
+                      );
+                    },
+                    child: const Text('🎁', style: TextStyle(fontSize: 120)),
                   ),
-                ),
-              ],
-              if (_isOpened && _reward != null) ...[
-                const Text('🎉', style: TextStyle(fontSize: 80)),
-                const SizedBox(height: 16),
-                Text(
-                  isAr ? 'حصلت على:' : 'You got:',
-                  style: const TextStyle(color: Colors.white54, fontSize: 16),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2a2a4a),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.amber, width: 2),
+                  const SizedBox(height: 24),
+                  Text(
+                    isAr ? 'لديك صندوق غموض!' : 'You got a Mystery Box!',
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                    textAlign: TextAlign.center,
                   ),
-                  child: Column(
-                    children: [
-                      Text(
-                        _reward!['type'] == 'coins' ? '🪙' : (_reward!['type'] == 'life' ? '❤️' : '⚡'),
-                        style: const TextStyle(fontSize: 48),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _reward!['label'] as String,
-                        style: const TextStyle(color: Colors.amber, fontSize: 22, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: OutlinedButton.icon(
-                    onPressed: _openAnotherBox,
-                    icon: const Icon(Icons.play_circle),
-                    label: Text(isAr ? 'شاهد إعلان لصندوق آخر' : 'Watch Ad for Another Box'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF4ECDC4),
-                      side: const BorderSide(color: Color(0xFF4ECDC4)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    isAr ? 'متابعة' : 'Continue',
+                  const SizedBox(height: 8),
+                  Text(
+                    isAr ? 'اضغط لفتحه' : 'Tap to open it',
                     style: const TextStyle(color: Colors.white54, fontSize: 16),
                   ),
-                ),
+                  const SizedBox(height: 32),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 55,
+                    child: ElevatedButton(
+                      onPressed: _openBox,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amber,
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ),
+                      child: Text(
+                        isAr ? 'افتح الصندوق!' : 'Open Box!',
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+                if (isOpened && reward != null) ...[
+                  const Text('🎉', style: TextStyle(fontSize: 80)),
+                  const SizedBox(height: 16),
+                  Text(
+                    isAr ? 'حصلت على:' : 'You got:',
+                    style: const TextStyle(color: Colors.white54, fontSize: 16),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2a2a4a),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.amber, width: 2),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          reward['type'] == 'coins' ? '🪙' : (reward['type'] == 'life' ? '❤️' : '⚡'),
+                          style: const TextStyle(fontSize: 48),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          reward['label'] as String,
+                          style: const TextStyle(color: Colors.amber, fontSize: 22, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: OutlinedButton.icon(
+                      onPressed: _openAnotherBox,
+                      icon: const Icon(Icons.play_circle),
+                      label: Text(isAr ? 'شاهد إعلان لصندوق آخر' : 'Watch Ad for Another Box'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF4ECDC4),
+                        side: const BorderSide(color: Color(0xFF4ECDC4)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: () => Get.back(),
+                    child: Text(
+                      isAr ? 'متابعة' : 'Continue',
+                      style: const TextStyle(color: Colors.white54, fontSize: 16),
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
