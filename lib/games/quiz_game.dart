@@ -19,11 +19,11 @@ class QuizGame extends StatelessWidget {
         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, height: 1.6)),
       const SizedBox(height: 30),
       ...List.generate(options.length, (i) {
-        Color border = Colors.white.withOpacity(0.08);
+        Color border = Colors.white.withValues(alpha: 0.08);
         Color bg = const Color(0xFF1e2a4a);
         if (ctrl.answered.value) {
-          if (ctrl.isCorrectOption(i)) { border = const Color(0xFF00C853); bg = const Color(0xFF00C853).withOpacity(0.15); }
-          else if (i == ctrl.selectedIndex.value) { border = const Color(0xFFFF5252); bg = const Color(0xFFFF5252).withOpacity(0.15); }
+          if (ctrl.isCorrectOption(i)) { border = const Color(0xFF00C853); bg = const Color(0xFF00C853).withValues(alpha: 0.15); }
+          else if (i == ctrl.selectedIndex.value) { border = const Color(0xFFFF5252); bg = const Color(0xFFFF5252).withValues(alpha: 0.15); }
         }
         return Padding(padding: const EdgeInsets.only(bottom: 10), child: GestureDetector(
           onTap: () => ctrl.selectAnswer(i),
@@ -32,7 +32,7 @@ class QuizGame extends StatelessWidget {
             decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(10),
               border: Border.all(color: border, width: 2)),
             child: Row(children: [
-              CircleAvatar(radius: 15, backgroundColor: Colors.white.withOpacity(0.06),
+              CircleAvatar(radius: 15, backgroundColor: Colors.white.withValues(alpha: 0.06),
                 child: Text(letters[i], style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700))),
               const SizedBox(width: 12),
               Expanded(child: Text(options[i], style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600))),

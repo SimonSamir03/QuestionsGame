@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import '../models/puzzle_model.dart';
 import 'storage_service.dart';
 
@@ -78,7 +78,9 @@ class ApiService {
   }
 
   void _log(String label, DioException e) {
-    print('API Error [$label]: ${e.message}');
+    if (kDebugMode) {
+      print('API Error [$label]: ${e.message}');
+    }
   }
 
   // ─── AUTH ───

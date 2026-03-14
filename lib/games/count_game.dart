@@ -41,11 +41,11 @@ class CountGame extends StatelessWidget {
           crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 2.2),
         itemCount: options.length,
         itemBuilder: (_, i) {
-          Color border = Colors.white.withOpacity(0.08);
+          Color border = Colors.white.withValues(alpha: .08);
           Color bg = const Color(0xFF1e2a4a);
           if (ctrl.answered.value) {
-            if (ctrl.isCorrectOption(i)) { border = const Color(0xFF00C853); bg = const Color(0xFF00C853).withOpacity(0.15); }
-            else if (i == ctrl.selectedIndex.value) { border = const Color(0xFFFF5252); bg = const Color(0xFFFF5252).withOpacity(0.15); }
+            if (ctrl.isCorrectOption(i)) { border = const Color(0xFF00C853); bg = const Color(0xFF00C853).withValues(alpha: 0.15); }
+            else if (i == ctrl.selectedIndex.value) { border = const Color(0xFFFF5252); bg = const Color(0xFFFF5252).withValues(alpha: 0.15); }
           }
           return GestureDetector(onTap: () => ctrl.selectAnswer(i), child: Container(
             decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(10),

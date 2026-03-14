@@ -227,7 +227,7 @@ class LocalPuzzles {
       type: 'quiz',
       question: subset[i]['q']!,
       answer: subset[i]['a']!,
-      options: (subset[i]['o']! as String).split('|'),
+      options: (subset[i]['o']!).split('|'),
       difficulty: difficulty,
       language: language,
     ));
@@ -405,8 +405,12 @@ class LocalPuzzles {
 
       // Build question string
       final allEmojis = <String>[];
-      for (int j = 0; j < targetCount; j++) allEmojis.add(targetEmoji);
-      for (int j = 0; j < otherCount; j++) allEmojis.add(otherEmoji);
+      for (int j = 0; j < targetCount; j++) {
+        allEmojis.add(targetEmoji);
+      }
+      for (int j = 0; j < otherCount; j++) {
+        allEmojis.add(otherEmoji);
+      }
       allEmojis.shuffle(Random(i + difficulty.hashCode));
 
       final question = allEmojis.join('');
