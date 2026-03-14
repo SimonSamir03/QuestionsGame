@@ -59,23 +59,23 @@ class ApiService {
     }
   }
 
-  Future<Response?> _put(String path, {dynamic data}) async {
+  /* Future<Response?> _put(String path, {dynamic data}) async {
     try {
       return await _dio.put(path, data: data);
     } on DioException catch (e) {
       _log('PUT $path', e);
       return null;
     }
-  }
+  } */
 
-  Future<Response?> _delete(String path) async {
+  /* Future<Response?> _delete(String path) async {
     try {
       return await _dio.delete(path);
     } on DioException catch (e) {
       _log('DELETE $path', e);
       return null;
     }
-  }
+  } */
 
   void _log(String label, DioException e) {
     if (kDebugMode) {
