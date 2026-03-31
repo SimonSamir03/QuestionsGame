@@ -1,0 +1,58 @@
+name: brainplay
+description: "BrainPlay - Entertainment Games"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  get: ^4.6.6
+  get_storage: ^2.1.1
+  dio: ^5.4.0
+  audioplayers: ^6.1.0
+  confetti: ^0.7.0
+  google_mobile_ads: ^5.3.1
+  connectivity_plus: ^6.1.0
+  firebase_core: ^3.8.0
+  firebase_messaging: ^15.1.5
+  google_fonts: ^6.2.1
+  uuid: ^4.5.1
+  device_info_plus: ^11.2.0
+  flutter_local_notifications: ^18.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#1a1a2e"
+  adaptive_icon_foreground: "assets/icon/app_icon.png"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icon/
+    - assets/sounds/
+    - assets/fonts/
+    - assets/dice/
+    - assets/pieces/
+    - assets/game_boards/
+  fonts:
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito-Regular.ttf
+        - asset: assets/fonts/Nunito-Bold.ttf
+          weight: 700
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo-Regular.ttf
+        - asset: assets/fonts/Cairo-Bold.ttf
+          weight: 700

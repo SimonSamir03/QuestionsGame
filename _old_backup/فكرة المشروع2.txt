@@ -1,0 +1,303 @@
+فكرة التطبيق
+
+BrainPlay – ألغاز وذكاء (عربي + إنجليزي)
+
+تطبيق ألعاب تعليمية سريعة. كل لعبة عبارة عن مراحل قصيرة (20–60 ثانية).
+النظام الأساسي:
+
+اللاعب عنده 5 قلوب ❤️
+
+كل خسارة تقلل قلب
+
+لما تخلص:
+
+🎥 يشاهد إعلان = +1 قلب
+
+💰 يشتري قلوب
+
+⏳ ينتظر 20 دقيقة
+
+الربح من:
+
+Google AdMob
+
+شراء داخل التطبيق (Remove Ads / Coins)
+
+الألعاب داخل التطبيق (MVP)
+
+ابدأ بثلاث ألعاب فقط:
+
+1️⃣ Word Builder (ترتيب الحروف)
+
+تظهر حروف مبعثرة
+
+اللاعب يكوّن كلمة
+
+مثال:
+
+T A C
+
+الجواب:
+
+CAT
+
+يدعم:
+
+عربي
+
+إنجليزي Beginner
+
+2️⃣ Quiz Game (أسئلة سريعة)
+
+سؤال + 4 اختيارات.
+
+مثال:
+
+What is the meaning of Apple?
+
+A تفاحة
+B سيارة
+C باب
+D كتاب
+
+3️⃣ Count Puzzle (عد الأشكال)
+
+صورة فيها أشكال.
+
+السؤال:
+
+كم عدد المثلثات؟
+الفكرة النفسية التي تشد اللاعب
+
+كل مرحلة:
+
+سهلة في البداية
+
+بعدها أصعب قليلًا
+
+واللاعب يشعر أنه قريب من الحل.
+
+هذا يجعل اللاعب:
+
+يحاول مرة أخرى
+
+يشاهد إعلان
+
+Structure المشروع
+Backend (Laravel)
+
+مسؤول عن:
+
+الأسئلة
+
+المراحل
+
+المستخدمين
+
+النقاط
+
+Laravel folders
+app/
+ ├── Models
+ │   ├── User.php
+ │   ├── Puzzle.php
+ │   ├── Level.php
+ │
+ ├── Http
+ │   ├── Controllers
+ │   │   ├── AuthController.php
+ │   │   ├── PuzzleController.php
+ │   │   ├── GameController.php
+Database Design
+users
+id
+name
+email
+coins
+lives
+language
+created_at
+puzzles
+id
+type
+question
+answer
+options
+difficulty
+language
+
+type:
+
+word
+quiz
+count
+levels
+id
+puzzle_id
+level_number
+reward
+user_progress
+id
+user_id
+level
+score
+completed
+API endpoints
+POST /api/login
+
+GET /api/puzzles
+
+POST /api/answer
+
+GET /api/daily
+
+POST /api/reward
+Flutter App Structure
+lib/
+
+main.dart
+
+screens/
+   home_screen.dart
+   game_screen.dart
+   result_screen.dart
+
+games/
+   word_game.dart
+   quiz_game.dart
+   count_game.dart
+
+services/
+   api_service.dart
+   ads_service.dart
+
+models/
+   puzzle_model.dart
+   user_model.dart
+UI Screens
+1️⃣ Splash Screen
+
+شعار اللعبة.
+
+2️⃣ Home Screen
+
+فيها:
+
+Play
+
+Daily Challenge
+
+Leaderboard
+
+Settings
+
+3️⃣ Game Selection
+Word Game
+Quiz Game
+Count Puzzle
+4️⃣ Puzzle Screen
+
+يعرض:
+
+السؤال
+
+الوقت
+
+القلوب
+
+نظام النقاط
+
+كل مرحلة تعطي:
+
+10 coins
+
+لو اللاعب شاهد إعلان:
+
++5 coins
+الإعلانات
+
+أنواع الإعلانات:
+
+Banner
+
+أسفل الشاشة.
+
+Interstitial
+
+كل 3 مراحل.
+
+Rewarded
+
+يعطي:
+
+قلب
+
+تلميح
+
+الشراء داخل التطبيق
+Remove Ads = 2$
+100 Coins = 1$
+500 Coins = 3$
+التحدي اليومي
+
+كل يوم:
+
+لغز واحد
+
+لو حله اللاعب يحصل على:
+
+50 coins
+مراحل التنفيذ (خطة العمل)
+المرحلة 1
+
+إنشاء Laravel API
+
+users
+puzzles
+login
+المرحلة 2
+
+Flutter UI
+
+home
+game screen
+المرحلة 3
+
+بناء الألعاب الثلاثة
+
+word
+quiz
+count
+المرحلة 4
+
+إضافة AdMob
+
+المرحلة 5
+
+إضافة شراء داخل التطبيق
+
+أفكار تحديثات مستقبلية
+
+بعد الإطلاق:
+
+أضف:
+
+توصيل النقاط
+
+فتح المسار
+
+Multiplayer quiz
+
+اسماء ممكنة للتطبيق
+
+بالعربي:
+
+ألغاز وذكاء
+اختبر ذكاءك
+تحدي العقل
+
+بالإنجليزي:
+
+BrainPlay
+Mind Puzzle
+Brain Challenge

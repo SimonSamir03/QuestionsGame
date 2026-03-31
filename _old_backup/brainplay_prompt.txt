@@ -1,0 +1,208 @@
+Generate the full Laravel backend first.
+-----
+You are a senior full-stack developer assistant.
+
+I want you to **generate a complete mobile puzzle game project**, fully modular, production-ready, and easy to expand.
+
+---
+
+# Stack
+
+* Backend: PHP + Laravel (API only)
+* Mobile App: Flutter
+* Database: MySQL or SQLite (Laravel default)
+
+---
+
+# Project Concept
+
+**Game Name (Example): BrainPlay – ألغاز وذكاء**
+
+* Educational + entertaining mini games
+* Arabic + English support
+* Core mechanic: Player has 5 lives, loses 1 life per failed attempt, can watch rewarded ad / wait / purchase lives
+* Coins earned per level to buy hints or extras
+
+---
+
+# MVP Games (Start with 3 games)
+
+1️⃣ **Word Builder Game**
+
+* Random letters appear
+* Player arranges them to form a word
+* Supports Arabic + English words
+* Generate **1000 levels automatically** with varying difficulty
+
+2️⃣ **Quiz Game**
+
+* Multiple choice (4 options)
+* Educational questions: English beginner vocab + general knowledge
+* Generate **1000 questions automatically** with difficulty levels
+
+3️⃣ **Count Puzzle**
+
+* Image with multiple shapes
+* Player counts shapes and selects correct number
+* Generate **1000 puzzles automatically** with varying shape complexity
+
+*(Future expansion: Connect Dots, Sliding Puzzle, Unlock Path)*
+
+---
+
+# Monetization
+
+* **Google AdMob**
+
+  * Banner
+  * Interstitial every 3 levels
+  * Rewarded ads for extra lives / hints
+* **In-app purchases**
+
+  * Remove Ads
+  * Buy Coins / Extra Lives
+
+---
+
+# Backend (Laravel) Requirements
+
+## Models
+
+* User
+* Puzzle
+* Level
+* UserProgress
+
+## Database Tables
+
+**users**
+
+```id="vdk8la"
+id | name | email | coins | lives | language | created_at | updated_at
+```
+
+**puzzles**
+
+```id="p5jfnc"
+id | type | question | answer | options | difficulty | language | created_at | updated_at
+```
+
+type example: word, quiz, count
+
+**levels**
+
+```id="ynvn6a"
+id | puzzle_id | level_number | reward | created_at | updated_at
+```
+
+**user_progress**
+
+```id="q8yzna"
+id | user_id | puzzle_id | level_number | score | completed | created_at | updated_at
+```
+
+## API Endpoints
+
+```id="d1t9je"
+POST   /api/login
+GET    /api/puzzles
+POST   /api/submit-answer
+GET    /api/daily-challenge
+POST   /api/reward-ad
+```
+
+---
+
+# Mobile App (Flutter) Requirements
+
+## Folder Structure
+
+```id="6ft9bg"
+lib/
+ main.dart
+ screens/
+   splash_screen.dart
+   home_screen.dart
+   game_screen.dart
+   result_screen.dart
+ games/
+   word_game.dart
+   quiz_game.dart
+   count_game.dart
+ services/
+   api_service.dart
+   ads_service.dart
+ models/
+   puzzle_model.dart
+   user_model.dart
+ widgets/
+```
+
+## Features
+
+* Arabic + English support
+* Daily Puzzle Challenge
+* Coins system
+* Lives system
+* Leaderboard ready
+* Clean modular architecture
+* Easy to expand with more games
+
+---
+
+# Instructions for Claude
+
+1️⃣ Generate Laravel project structure first (Models, Migrations, Controllers, API routes)
+2️⃣ Generate **1000 puzzles / questions / levels** automatically per game
+3️⃣ Seed the database with this data
+4️⃣ Generate Flutter project structure
+5️⃣ Generate UI for Splash, Home, Game, Result screens
+6️⃣ Connect Flutter UI to Laravel API
+7️⃣ Implement game logic for all 3 MVP games
+8️⃣ Implement coins & lives system
+9️⃣ Add AdMob integration placeholders
+10️⃣ Keep code clean, modular, and production-ready
+
+---
+
+# Guidelines
+
+* Modular: Each game in its own file/class
+* Scalable: Easy to add more games later
+* Document the code clearly with comments
+* Include sample assets / placeholder images
+* Include a README for setup instructions
+* Generate **all levels / puzzles automatically** so the project يمكن تشغيله مباشرة بعد البناء
+
+--------------
+
+
+4️⃣ تقسيم العمل حسب المراحل
+
+من التجربة، الأفضل أنك تشتغل مع Claude مرحلة مرحلة:
+
+المرحلة 1 – Laravel Backend
+
+Models, Migrations, Controllers
+
+API Routes
+
+Seeder ل 1000 puzzle/level/question لكل لعبة
+
+المرحلة 2 – Flutter UI
+
+Structure lib/ + Screens + Games + Widgets + Services
+
+Splash, Home, Game, Result screens
+
+المرحلة 3 – Game Logic
+
+Word Game, Quiz Game, Count Puzzle
+
+Lives & Coins system
+
+المرحلة 4 – Ads & IAP
+
+AdMob placeholders
+
+Coins / Lives purchases logic

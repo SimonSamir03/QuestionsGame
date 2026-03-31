@@ -1,0 +1,235 @@
+الشكل العام للمشروع
+
+Project
+│
+├── Backend (Laravel)
+│   ├── API
+│   ├── Admin Panel
+│   ├── Database
+│   └── Game Logic Data
+│
+├── Mobile App (Flutter)
+│   ├── UI
+│   ├── Game Engine
+│   ├── Ads Integration
+│   └── API Connection
+│
+└── Assets
+    ├── Images
+    ├── Sounds
+    └── Puzzle Data
+	
+----------------
+
+أولاً Backend (Laravel)
+
+Laravel سيكون مسؤول عن:
+
+الأسئلة
+
+الألغاز
+
+الإحصائيات
+
+حسابات اللاعبين
+
+Structure
+
+app
+ ├── Models
+ │   ├── User
+ │   ├── Puzzle
+ │   ├── Level
+ │   ├── Question
+ │
+ ├── Http
+ │   ├── Controllers
+ │   │   ├── AuthController
+ │   │   ├── GameController
+ │   │   ├── PuzzleController
+ │
+routes
+ ├── api.php
+ 
+-------------------
+
+Database Design
+
+users
+
+id
+name
+email
+coins
+lives
+language
+created_at
+
+-----
+
+puzzles
+
+id
+type
+level
+question
+answer
+difficulty
+language
+
+-----
+
+type مثل:
+
+word
+math
+logic
+count
+connect
+
+------
+
+user_progress
+
+------
+
+id
+user_id
+level
+score
+completed
+
+------
+
+API Endpoints
+مثلاً:
+
+POST /api/login
+GET /api/puzzles
+POST /api/submit-answer
+GET /api/daily-challenge
+POST /api/reward-ad
+
+------
+
+Flutter App Structure
+lib
+│
+├── main.dart
+│
+├── screens
+│   ├── home_screen
+│   ├── puzzle_screen
+│   ├── result_screen
+│
+├── games
+│   ├── word_game
+│   ├── connect_game
+│   ├── quiz_game
+│   ├── count_game
+│
+├── services
+│   ├── api_service
+│   ├── ads_service
+│
+├── models
+│   ├── puzzle_model
+│   ├── user_model
+│
+└── widgets
+نظام المحاولات
+
+في Flutter:
+
+lives = 5
+
+عند الخسارة:
+
+lives -= 1
+
+لو صفر:
+
+showAd()
+or
+waitTimer()
+الإعلانات
+
+أفضل شيء:
+
+Google AdMob
+
+أنواع الإعلانات:
+
+Banner
+Interstitial
+Rewarded
+
+Rewarded مهم جدًا لأنه يعطي:
+
+حياة إضافية
+
+تلميح
+
+مراحل بناء المشروع (الخطة)
+المرحلة 1
+
+بناء Laravel API
+
+users
+
+puzzles
+
+login
+
+المرحلة 2
+
+بناء Flutter UI
+
+شاشة البداية
+
+شاشة اختيار اللعبة
+
+شاشة اللغز
+
+المرحلة 3
+
+إضافة الألعاب
+
+ترتيب الحروف
+
+توصيل النقاط
+
+الأسئلة
+
+العد الصحيح
+
+المرحلة 4
+
+إضافة الإعلانات
+
+AdMob
+
+المرحلة 5
+
+إضافة الشراء داخل التطبيق
+
+Remove Ads
+Coins
+
+نصيحة مهمة جدًا
+
+لا تبدأ بـ 5 ألعاب مرة واحدة.
+
+ابدأ بـ:
+
+لعبتين فقط
+
+مثلاً:
+
+ترتيب الحروف
+
+الأسئلة
+
+ثم أضف الباقي بالتحديثات
+
+

@@ -1,0 +1,229 @@
+Banner:
+--------------
+AdMob app ID
+BrainPlayca-app-pub-5077591301078112~9248621126
+
+AdMob ad unit ID
+game_bannerca-app-pub-5077591301078112/2994533536
+-------
+AdMob app ID
+BrainPlayca-app-pub-5077591301078112~4091992783
+
+AdMob ad unit ID
+game_bannerca-app-pub-5077591301078112/1370131104
+-----------------------------------------------------------
+Interstitial
+--------------
+AdMob app ID
+BrainPlayca-app-pub-5077591301078112~9248621126
+
+AdMob ad unit ID
+interstitial_levelca-app-pub-5077591301078112/3661252527
+-----------
+AdMob app ID
+BrainPlayca-app-pub-5077591301078112~4091992783
+
+AdMob ad unit ID
+interstitial_levelca-app-pub-5077591301078112/1589622951
+-------------------------------------------------------------
+Rewarded
+------------
+AdMob app ID
+BrainPlayca-app-pub-5077591301078112~9248621126
+
+AdMob ad unit ID
+reward_videoca-app-pub-5077591301078112/6454936829
+------------
+AdMob app ID
+BrainPlayca-app-pub-5077591301078112~4091992783
+
+AdMob ad unit ID
+reward_videoca-app-pub-5077591301078112/9559466529
+------------------------------------------------------------
+Integrate Google AdMob ads into the BrainPlay Flutter game project.
+
+Use the package:
+google_mobile_ads
+
+The project already contains puzzle games and levels, and ads must be integrated in a clean modular way.
+
+---
+
+1. INSTALL ADMOB PACKAGE
+
+Add the dependency:
+
+flutter pub add google_mobile_ads
+
+Then initialize ads in main.dart.
+
+---
+
+2. ADMOB APP IDS
+
+Android App ID:
+ca-app-pub-5077591301078112~9248621126
+
+iOS App ID:
+ca-app-pub-5077591301078112~4091992783
+
+Add them properly:
+
+Android → AndroidManifest.xml
+
+<meta-data
+android:name="com.google.android.gms.ads.APPLICATION_ID"
+android:value="ca-app-pub-5077591301078112~9248621126"/>
+
+iOS → Info.plist
+
+Add the AdMob App ID configuration.
+
+---
+
+3. ADMOB AD UNIT IDS
+
+BANNER ADS
+
+Android Banner ID
+ca-app-pub-5077591301078112/2994533536
+
+iOS Banner ID
+ca-app-pub-5077591301078112/1370131104
+
+---
+
+INTERSTITIAL ADS
+
+Android Interstitial ID
+ca-app-pub-5077591301078112/3661252527
+
+iOS Interstitial ID
+ca-app-pub-5077591301078112/1589622951
+
+---
+
+REWARDED ADS
+
+Android Rewarded ID
+ca-app-pub-5077591301078112/6454936829
+
+iOS Rewarded ID
+ca-app-pub-5077591301078112/9559466529
+
+---
+
+4. BANNER AD IMPLEMENTATION
+
+Add a persistent banner at the bottom of gameplay screens.
+
+Example screens:
+
+Puzzle gameplay
+Word Builder
+Quiz
+Categories game
+
+The banner should stay fixed at the bottom.
+
+---
+
+5. INTERSTITIAL AD LOGIC
+
+Show an interstitial ad every 3 completed levels.
+
+Example logic:
+
+Level 1
+Level 2
+Level 3
+→ show interstitial ad
+
+Then continue normally.
+
+---
+
+6. REWARDED ADS SYSTEM
+
+Implement rewarded ads for the following actions:
+
+Continue after losing
+Double coins reward
+Extra life
+Extra hint
+Mystery reward box
+
+Example UI:
+
+"Double your reward?"
+Watch video → reward ×2
+
+---
+
+7. CREATE A CENTRALIZED AD MANAGER
+
+Create a service file:
+
+ad_manager.dart
+
+This service should handle:
+
+loading ads
+showing ads
+retry logic
+platform detection (Android / iOS)
+
+---
+
+8. PLATFORM DETECTION
+
+Use platform checks:
+
+Android → use Android ad IDs
+iOS → use iOS ad IDs
+
+---
+
+9. OPTIMIZATION
+
+Make sure ads:
+
+load asynchronously
+do not block gameplay
+reload automatically if failed
+
+---
+
+10. SAFETY
+
+Add test device configuration for development.
+
+Prevent invalid traffic during testing.
+
+---
+
+11. CODE STRUCTURE
+
+Ads must be separated from gameplay logic.
+
+Use a reusable AdManager class.
+
+Keep the architecture clean and scalable.
+
+---
+
+Return:
+
+* Flutter code
+* AdManager service
+* Example usage inside a game screen
+* Banner widget implementation
+* Interstitial trigger logic
+* Rewarded ad trigger
+
+------------------------------------------------------------
+
+أثناء التطوير استخدم:
+
+Test Ads
+
